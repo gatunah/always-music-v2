@@ -10,7 +10,17 @@ const config = {
   port: 5432,
 };
 
-const pool = new Pool(config);
+let pool;
+
+const connectDB = async () => {
+  try {
+    pool = new Pool(config);
+    console.log(chalk.green.bold("Conexión exitosa a la BD"));
+  } catch (e) {
+    console.error(chalk.red.bold("Error al conectar a la BD:", e.message));
+    process.exit(1); 
+  }
+};
 
 // VALIDACION ARGS
 const validateArgs = (args, lengthEsperado) => {
@@ -137,6 +147,8 @@ const eliminar = async (args) => {
 
 // MAIN
 const main = async () => {
+  await connectDB(); 
+
   const args = process.argv.slice(2);
   const option = args[0]; // OPCION
   const argsFunction = args.slice(1); // ARGS
@@ -165,7 +177,7 @@ const main = async () => {
   } catch (e) {
     console.error(chalk.red.bold(`Error: ${e.message}`));
   } finally {
-    await pool.end();
+    await pool.end(); 
   }
 };
 
